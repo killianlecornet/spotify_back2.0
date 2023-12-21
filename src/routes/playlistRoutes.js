@@ -2,12 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const Playlist = require('../models/playlist');
 const Music = require('../models/music');
 const router = express.Router();
 
-const upload = multer({ dest: 'uploads/' });
+// Configuration de Multer
+const upload = multer();
 
 AWS.config.update({
     accessKeyId: process.env.ACCES_KEY_ID,
@@ -17,16 +17,13 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-const uploadToS3 = (file, keyPrefix) => {
+// Fonction pour téléverser un fichier sur S3
+const uploadToS3 = (buffer, filename, keyPrefix) => {
     return new Promise((resolve, reject) => {
-        if (!file) {
-            reject(new Error("Fichier manquant"));
-        }
-
         const uploadParams = {
             Bucket: 'spotify95', // Remplacez par le nom de votre bucket
-            Key: `${keyPrefix}/${Date.now()}_${file.originalname}`,
-            Body: fs.createReadStream(file.path)
+            Key: `${keyPrefix}/${Date.now()}_${filename}`,
+            Body: buffer
         };
 
         s3.upload(uploadParams, (err, data) => {

@@ -2,13 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const Artist = require('../models/artist');
 const Album = require('../models/album');
 const Music = require('../models/music');
 const router = express.Router();
 
-const upload = multer({ dest: 'uploads/' });
+// Configuration de Multer pour gérer les fichiers entrants
+const upload = multer();
 
 AWS.config.update({
     accessKeyId: process.env.ACCES_KEY_ID,
@@ -18,16 +18,13 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-const uploadToS3 = (file, keyPrefix) => {
+// Fonction pour téléverser un fichier sur S3
+const uploadToS3 = (buffer, filename, keyPrefix) => {
     return new Promise((resolve, reject) => {
-        if (!file) {
-            reject(new Error("Fichier manquant"));
-        }
-
         const uploadParams = {
             Bucket: 'spotify95', // Remplacez par le nom de votre bucket
-            Key: `${keyPrefix}/${Date.now()}_${file.originalname}`,
-            Body: fs.createReadStream(file.path)
+            Key: `${keyPrefix}/${Date.now()}_${filename}`,
+            Body: buffer
         };
 
         s3.upload(uploadParams, (err, data) => {
@@ -66,11 +63,15 @@ router.get('/:id', async (req, res) => {
 // Route POST pour créer un nouvel artiste
 router.post('/upload', upload.single('image'), async (req, res) => {
     const { name, description, albums, musics } = req.body;
-    const imageFile = req.file;
+    let imageUrl = null;
+
+    if (req.file) {
+        const buffer = req.file.buffer;
+        const filename = req.file.originalname;
+        imageUrl = await uploadToS3(buffer, filename, 'artistImages');
+    }
 
     try {
-        const imageUrl = imageFile ? await uploadToS3(imageFile, 'artistImages') : null;
-
         const newArtist = new Artist({
             name,
             description,
@@ -89,11 +90,15 @@ router.post('/upload', upload.single('image'), async (req, res) => {
 // Route PUT pour mettre à jour un artiste par ID
 router.put('/:id', upload.single('image'), async (req, res) => {
     const { name, description, albums, musics } = req.body;
-    const imageFile = req.file;
+    let imageUrl = null;
+
+    if (req.file) {
+        const buffer = req.file.buffer;
+        const filename = req.file.originalname;
+        imageUrl = await uploadToS3(buffer, filename, 'artistImages');
+    }
 
     try {
-        const imageUrl = imageFile ? await uploadToS3(imageFile, 'artistImages') : null;
-
         const updateData = {
             name,
             description,
