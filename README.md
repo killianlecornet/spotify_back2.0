@@ -25,11 +25,11 @@
 
 Lors de votre passage, nous vous avons demandé d'ajouter des fonctionnalités. À chaque fonctionnalité correspond une vidéo individuelle, sans compilation. Veuillez mettre les vidéos en privé sur YouTube.
 
-### Demande 1 (searchbar delay)
-- [Vidéo de la fonctionnalité](lien_youtube_searchbar_delay)
+### Demande 1 (searchbar delay ajouter 0,400seconde de delay entre chaque input du clavier)
+- [Vidéo de la fonctionnalité](https://youtu.be/HCdFc1uykkg)
 
-### Demande 2 (playlist dynamique)
-- [Vidéo de la fonctionnalité](lien_youtube_playlist_dynamique)
+### Demande 2 (lecture partager)
+- [Vidéo de la fonctionnalité](https://youtu.be/Ij24sxlPxIs)
 
-### Demande 3 (lecture partager)
-- [Vidéo de la fonctionnalité](lien_youtube_lecture_partager)
+### Demande 3 (playlist dynamique recupère les 20 dernieres musiques ajouter)
+- [Vidéo de la fonctionnalité](https://youtu.be/ITHWGzEexeA)
